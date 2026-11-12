@@ -1,0 +1,129 @@
+# Newze Event Taxonomy
+# version is referenced by events.taxonomy_version — NEVER renumber or repurpose a type.
+# Deprecate instead: set `deprecated: true` and add `superseded_by`.
+version: 1
+updated: 2026-11-12
+owner: staff_analyst
+
+# Each type declares:
+#   impactful       — whether Impacts may be computed for it at all
+#   consensus       — whether a consensus baseline exists (drives surprise_z)
+#   default_affected— instrument classes typically affected (seeds, not a constraint)
+#   horizons        — horizons we attempt
+#   min_tier        — best source tier required before classification is trusted
+
+families:
+
+  monetary:
+    description: Central bank policy and communication
+    types:
+      RATE_DECISION:
+        subtypes: [CUT, HIKE, HOLD, EMERGENCY_CUT, EMERGENCY_HIKE]
+        impactful: true
+        consensus: true
+        default_affected: [index, fx, bond, commodity]
+        horizons: [15m, 1h, 1d, 5d, 20d]
+        min_tier: 1
+      CB_SPEECH:        { subtypes: [HAWKISH, DOVISH, NEUTRAL],            impactful: true,  consensus: false, horizons: [15m, 1h, 1d] }
+      CB_MINUTES:       { subtypes: [HAWKISH, DOVISH, NEUTRAL],            impactful: true,  consensus: false, horizons: [1h, 1d] }
+      QT_CHANGE:        { subtypes: [TAPER, EXPAND, PAUSE],                impactful: true,  consensus: true,  horizons: [1d, 5d, 20d] }
+      FX_INTERVENTION:  { subtypes: [BUY_DOMESTIC, SELL_DOMESTIC, VERBAL], impactful: true,  consensus: false, horizons: [15m, 1h, 1d] }
+      CRR_SLR_CHANGE:   { subtypes: [CUT, HIKE],                           impactful: true,  consensus: true,  horizons: [1d, 5d] }   # India
+      LIQUIDITY_OP:     { subtypes: [VRR, VRRR, OMO_BUY, OMO_SELL],        impactful: true,  consensus: false, horizons: [1d] }       # India
+
+  macro_print:
+    description: Scheduled statistical releases
+    types:
+      CPI:              { impactful: true, consensus: true, horizons: [15m, 1h, 1d, 5d] }
+      WPI:              { impactful: true, consensus: true, horizons: [1h, 1d] }           # India
+      CORE_PCE:         { impactful: true, consensus: true, horizons: [15m, 1h, 1d] }      # US
+      GDP:              { subtypes: [ADVANCE, SECOND, FINAL], impactful: true, consensus: true, horizons: [1h, 1d, 5d] }
+      IIP:              { impactful: true, consensus: true, horizons: [1d] }               # India
+      PMI:              { subtypes: [MANUFACTURING, SERVICES, COMPOSITE], impactful: true, consensus: true, horizons: [1h, 1d] }
+      NFP:              { impactful: true, consensus: true, horizons: [15m, 1h, 1d, 5d] }  # US
+      JOBLESS_CLAIMS:   { impactful: true, consensus: true, horizons: [15m, 1h] }
+      UNEMPLOYMENT:     { impactful: true, consensus: true, horizons: [1h, 1d] }
+      TRADE_BALANCE:    { impactful: true, consensus: true, horizons: [1d] }
+      GST_COLLECTION:   { impactful: true, consensus: true, horizons: [1d] }               # India
+      FISCAL_DEFICIT:   { impactful: true, consensus: true, horizons: [1d, 5d] }
+      MONSOON:          { subtypes: [ONSET, DEFICIT, SURPLUS, WITHDRAWAL], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }  # India
+      INVENTORY_REPORT: { subtypes: [CRUDE, GAS], impactful: true, consensus: true, horizons: [15m, 1h, 1d] }
+
+  corporate:
+    types:
+      EARNINGS:         { subtypes: [BEAT, MISS, INLINE], impactful: true, consensus: true, horizons: [15m, 1h, 1d, 5d, 20d] }
+      GUIDANCE_CHANGE:  { subtypes: [RAISE, CUT, REAFFIRM, WITHDRAW], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      MNA:              { subtypes: [ANNOUNCED, COMPLETED, TERMINATED, RUMOURED, HOSTILE], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      BUYBACK:          { subtypes: [ANNOUNCED, COMPLETED, TENDER, OPEN_MARKET], impactful: true, consensus: false, horizons: [1d, 5d] }
+      DIVIDEND:         { subtypes: [DECLARED, RAISED, CUT, SPECIAL, OMITTED], impactful: true, consensus: false, horizons: [1d] }
+      SPLIT_BONUS:      { subtypes: [SPLIT, BONUS, RIGHTS], impactful: true, consensus: false, horizons: [1d, 5d] }
+      CAPEX:            { subtypes: [ANNOUNCED, EXPANDED, DEFERRED], impactful: true, consensus: false, horizons: [1d, 20d] }
+      ORDER_WIN:        { impactful: true, consensus: false, horizons: [1d, 5d] }
+      MGMT_CHANGE:      { subtypes: [CEO, CFO, CHAIR, BOARD, RESIGNATION], impactful: true, consensus: false, horizons: [1d, 5d] }
+      AUDITOR_RESIGN:   { impactful: true, consensus: false, horizons: [1d, 5d, 20d], min_tier: 0 }   # high-signal red flag
+      CREDIT_RATING:    { subtypes: [UPGRADE, DOWNGRADE, OUTLOOK_CHANGE, WATCH], impactful: true, consensus: false, horizons: [1d, 5d] }
+      DEFAULT_EVENT:    { subtypes: [MISSED_PAYMENT, RESTRUCTURE, INSOLVENCY], impactful: true, consensus: false, horizons: [1d, 5d, 20d], min_tier: 0 }
+      PRODUCT_EVENT:    { subtypes: [LAUNCH, RECALL, APPROVAL, REJECTION], impactful: true, consensus: false, horizons: [1d, 5d] }
+
+  regulatory:
+    types:
+      SEBI_ACTION:      { subtypes: [CIRCULAR, PENALTY, BAN, CONSULTATION, APPROVAL], impactful: true, consensus: false, horizons: [1d, 5d] }
+      RBI_CIRCULAR:     { subtypes: [TIGHTENING, EASING, CLARIFICATION], impactful: true, consensus: false, horizons: [1d, 5d] }
+      TARIFF:           { subtypes: [IMPOSED, RAISED, CUT, EXEMPTED, THREATENED], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      TAX_CHANGE:       { subtypes: [RAISED, CUT, NEW, ABOLISHED], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      ANTITRUST:        { subtypes: [PROBE, FINE, BLOCK, CLEARANCE], impactful: true, consensus: false, horizons: [1d, 5d] }
+      SANCTION:         { subtypes: [IMPOSED, LIFTED, EXPANDED], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      BUDGET:           { subtypes: [UNION, STATE, INTERIM], impactful: true, consensus: true, horizons: [15m, 1h, 1d, 5d, 20d] }   # India: Feb 1
+      POLICY_REFORM:    { impactful: true, consensus: false, horizons: [5d, 20d] }
+
+  flows:
+    types:
+      FII_DII_FLOW:     { subtypes: [NET_BUY, NET_SELL], impactful: true, consensus: false, horizons: [1d, 5d] }   # India
+      BULK_BLOCK_DEAL:  { subtypes: [BULK, BLOCK], impactful: true, consensus: false, horizons: [1d, 5d] }         # India
+      INSIDER_TRADE:    { subtypes: [BUY, SELL, PLEDGE, RELEASE], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      INDEX_REBALANCE:  { subtypes: [ADD, DELETE, WEIGHT_CHANGE], impactful: true, consensus: false, horizons: [1d, 5d] }
+      MF_FLOW:          { subtypes: [INFLOW, OUTFLOW], impactful: true, consensus: false, horizons: [5d, 20d] }
+      ETF_FLOW:         { subtypes: [INFLOW, OUTFLOW], impactful: true, consensus: false, horizons: [1d, 5d] }
+      STAKE_CHANGE:     { subtypes: [PROMOTER_BUY, PROMOTER_SELL, PLEDGE], impactful: true, consensus: false, horizons: [1d, 5d] }
+
+  geopolitical:
+    types:
+      CONFLICT:         { subtypes: [ESCALATION, DEESCALATION, CEASEFIRE, STRIKE], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      ELECTION:         { subtypes: [RESULT, EXIT_POLL, CALLED, UPSET], impactful: true, consensus: true, horizons: [1d, 5d, 20d] }
+      DISASTER:         { subtypes: [NATURAL, INDUSTRIAL, CYBER], impactful: true, consensus: false, horizons: [1d, 5d] }
+      SUPPLY_DISRUPTION:{ subtypes: [PORT, PIPELINE, STRIKE, SHIPPING_LANE], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      OPEC_DECISION:    { subtypes: [CUT, RAISE, HOLD, DELAY], impactful: true, consensus: true, horizons: [15m, 1h, 1d, 5d] }
+      POLITICAL_RISK:   { subtypes: [COUP, RESIGNATION, PROTEST, IMPEACHMENT], impactful: true, consensus: false, horizons: [1d, 5d] }
+
+  market_structure:
+    types:
+      CIRCUIT:          { subtypes: [UPPER, LOWER, MARKET_WIDE], impactful: true, consensus: false, horizons: [15m, 1h, 1d] }
+      TRADING_HALT:     { subtypes: [IMPOSED, LIFTED], impactful: true, consensus: false, horizons: [15m, 1h] }
+      EXPIRY:           { subtypes: [WEEKLY, MONTHLY, QUARTERLY], impactful: true, consensus: false, horizons: [1d] }
+      FNO_BAN:          { subtypes: [ENTERED, EXITED], impactful: true, consensus: false, horizons: [1d] }          # India
+      MARGIN_CHANGE:    { subtypes: [RAISED, CUT], impactful: true, consensus: false, horizons: [1d, 5d] }
+      LOT_SIZE_CHANGE:  { impactful: false, consensus: false }
+      LISTING:          { subtypes: [IPO, DIRECT, SME, DELISTING], impactful: true, consensus: false, horizons: [1d, 5d, 20d] }
+      SETTLEMENT_CHANGE:{ impactful: false, consensus: false }
+
+  meta:
+    description: Non-market events we still track
+    types:
+      RUMOUR:           { impactful: false, consensus: false, note: "T4 sources only. Never produces a published Impact." }
+      CORRECTION:       { impactful: false, consensus: false, note: "A source corrected itself. Triggers our own correction flow." }
+      DENIAL:           { impactful: true,  consensus: false, horizons: [15m, 1h, 1d], note: "A denial is itself market-moving." }
+      SCHEDULED_NOTICE: { impactful: false, consensus: false, note: "Calendar entries; becomes a real event on release." }
+
+# ---------------------------------------------------------------------------
+# Global rules
+rules:
+  - id: R1
+    rule: "An Event from a tier-4 source may only be typed RUMOUR, and never produces a published Impact."
+  - id: R2
+    rule: "impactful: false types never create rows in `impacts`."
+  - id: R3
+    rule: "consensus: true types MUST attempt a consensus join; if none is found, surprise_direction = 'na' and confidence is penalised."
+  - id: R4
+    rule: "Adding a type requires a golden-set addition of >=20 labelled examples before it may publish."
+  - id: R5
+    rule: "A type is never deleted or renumbered. Deprecate with `deprecated: true` + `superseded_by`."

@@ -1,0 +1,469 @@
+<title>Newze Concept Test</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single centred column, phone-first. Tokens are the project's own
+   (03-design/design-system.md) because this prototype also tests them. */
+:root{
+  --bg:#FFFFFF; --raised:#F7F8FA; --sunken:#EEF0F4; --border:#E2E5EA;
+  --fg:#0D1117; --muted:#5A6472; --faint:#8C95A3;
+  --accent:#2563EB; --up:#0E8A4F; --down:#C62B2B; --flat:#6B7280;
+  --warn:#B45309; --warn-bg:#FDF4E7; --rumour:#7C3AED;
+  --display:'Inter Tight',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,sans-serif;
+  --data:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
+  --r:8px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B0E14; --raised:#141821; --sunken:#070A0F; --border:#232936;
+  --fg:#E6EAF2; --muted:#8B95A7; --faint:#5D6678;
+  --accent:#4D8DFF; --up:#2FBF71; --down:#FF5C5C; --flat:#8B95A7;
+  --warn:#F0A830; --warn-bg:#2A2008; --rumour:#A982FF;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0B0E14; --raised:#141821; --sunken:#070A0F; --border:#232936;
+  --fg:#E6EAF2; --muted:#8B95A7; --faint:#5D6678;
+  --accent:#4D8DFF; --up:#2FBF71; --down:#FF5C5C; --flat:#8B95A7;
+  --warn:#F0A830; --warn-bg:#2A2008; --rumour:#A982FF;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);
+  font-size:15px;line-height:1.55;margin:0;-webkit-font-smoothing:antialiased}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  max-width:760px;margin:0 auto;padding-block:0 56px}
+body::before{content:"";position:fixed;inset:0 0 auto;
+  height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;
+  background:var(--bg);border-bottom:1px solid var(--border);
+  padding-block:10px 0;margin-bottom:14px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.stamp{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--warn);border:1px solid var(--warn);border-radius:999px;padding:2px 7px}
+nav{display:flex;gap:2px;margin-top:10px;overflow-x:auto}
+nav button{font:inherit;font-size:13px;font-weight:500;background:none;border:0;
+  color:var(--muted);padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;
+  white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+nav button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+.notice{background:var(--warn-bg);border:1px solid var(--warn);border-radius:var(--r);
+  padding:10px 12px;font-size:12.5px;color:var(--fg);margin-bottom:18px}
+.notice strong{color:var(--warn)}
+
+/* shared bits */
+.card{background:var(--raised);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;margin-bottom:10px}
+.lbl{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px}
+.num{font-family:var(--data);font-variant-numeric:tabular-nums}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--flat)}
+.meta{font-size:11.5px;color:var(--faint);font-family:var(--data)}
+.tier{display:inline-block;width:8px;height:8px;border-radius:50%;
+  background:var(--accent);margin-right:5px;vertical-align:1px}
+.tier.t1{background:var(--muted)}
+hr{border:0;border-top:1px solid var(--border);margin:12px 0}
+
+/* bridge */
+.phone{max-width:412px;margin:0 auto}
+.openbox{text-align:center;padding-block:4px 2px}
+.openbox .sym{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--muted);
+  text-transform:uppercase}
+.bignum{font-family:var(--display);font-size:clamp(38px,11vw,52px);font-weight:600;
+  line-height:1.05;font-variant-numeric:tabular-nums;margin:2px 0}
+.delta{font-family:var(--data);font-size:16px;font-weight:500}
+.second{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0 2px;border-top:1px solid var(--border);margin-top:12px;font-size:14px}
+
+/* waterfall */
+.wf{display:grid;gap:5px;margin-top:4px}
+.wfrow{display:grid;grid-template-columns:minmax(76px,88px) 1fr 46px;
+  align-items:center;gap:8px;font-size:12.5px}
+.wfname{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wfbar{position:relative;height:15px;background:var(--sunken);border-radius:3px}
+.wfbar i{position:absolute;top:0;height:100%;border-radius:3px}
+.wfbar::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;
+  width:1px;background:var(--border)}
+.wfval{font-family:var(--data);font-variant-numeric:tabular-nums;text-align:right;
+  font-size:12.5px}
+.wfnet{border-top:1px solid var(--border);padding-top:7px;margin-top:3px;font-weight:600}
+
+/* impact card */
+.ic{border:1px solid var(--border);border-radius:var(--r);background:var(--raised);
+  overflow:hidden}
+.ic .hd{padding:12px 14px;border-bottom:1px solid var(--border)}
+.ic h3{font-family:var(--display);font-size:16.5px;font-weight:600;margin:4px 0 0;
+  line-height:1.25;text-wrap:balance}
+.ic .bd{padding:12px 14px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);text-align:right;padding:0 0 6px;border-bottom:1px solid var(--border)}
+.tbl th:first-child{text-align:left}
+.tbl td{padding:7px 0;border-bottom:1px solid var(--border);text-align:right;
+  font-family:var(--data);font-variant-numeric:tabular-nums;font-size:12.5px}
+.tbl td:first-child{text-align:left;font-family:var(--body);font-weight:500}
+.tbl tr:last-child td{border-bottom:0}
+.thin td{color:var(--warn);font-family:var(--body);font-style:italic;text-align:left}
+.disc{font-size:11px;color:var(--faint);padding:10px 14px;border-top:1px solid var(--border);
+  background:var(--sunken)}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:999px;
+  overflow:hidden;margin-bottom:12px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:12.5px;font-weight:500;background:var(--raised);
+  border:0;border-right:1px solid var(--border);color:var(--muted);padding:7px 14px;
+  cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* analogs */
+.fan{width:100%;height:68px;display:block}
+.alist{font-size:12.5px;margin-top:8px}
+.alist div{display:flex;justify-content:space-between;gap:10px;padding:4px 0;
+  border-bottom:1px solid var(--border);font-family:var(--data);
+  font-variant-numeric:tabular-nums}
+.alist div:last-child{border-bottom:0}
+.alist span:first-child{font-family:var(--body);color:var(--muted)}
+.warnline{display:flex;gap:7px;font-size:11.5px;color:var(--warn);margin-top:9px;
+  align-items:flex-start}
+
+/* research panel */
+.rp{border:1px dashed var(--accent);border-radius:var(--r);padding:13px;
+  margin-top:20px;font-size:12.5px;background:transparent}
+.rp .lbl{color:var(--accent)}
+.rp ul{margin:6px 0 0;padding-left:18px}
+.rp li{margin-bottom:4px}
+.rp code{font-family:var(--data);font-size:11.5px;background:var(--sunken);
+  padding:1px 4px;border-radius:3px}
+footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);
+  font-size:11.5px;color:var(--faint)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="brand">
+    <span class="logo">NEWZE</span>
+    <span class="stamp">Research prototype</span>
+  </div>
+  <nav role="tablist">
+    <button role="tab" id="t-bridge" aria-selected="true" onclick="show('bridge')">Overnight Bridge</button>
+    <button role="tab" id="t-impact" aria-selected="false" onclick="show('impact')">Impact Card A/B/C</button>
+    <button role="tab" id="t-wf" aria-selected="false" onclick="show('wf')">Waterfall density</button>
+  </nav>
+</header>
+
+<div class="notice">
+  <strong>Illustrative figures.</strong> Every number, event and price on this page is
+  invented for research purposes. Nothing here is market data, and nothing here is advice.
+  This is the stimulus for the Phase&nbsp;0 concept test.
+</div>
+
+<!-- ───────────────────────── BRIDGE ───────────────────────── -->
+<section id="bridge">
+<div class="phone">
+
+  <div class="card">
+    <div class="meta" style="margin-bottom:8px">Thursday 12 Nov · 07:30 IST</div>
+    <div class="lbl">Expected open</div>
+    <div class="openbox">
+      <div class="sym">Nifty 50</div>
+      <div class="bignum down">24,310</div>
+      <div class="delta down">▼ −152 (−0.62%)</div>
+    </div>
+    <svg class="fan" viewBox="0 0 400 66" style="height:66px" role="img"
+         aria-label="Expected open 24,310. 68% range 24,250 to 24,370. 95% range 24,180 to 24,440.">
+      <rect x="20" y="20" width="360" height="16" rx="3" fill="var(--sunken)"/>
+      <rect x="110" y="20" width="180" height="16" rx="3" fill="var(--border)"/>
+      <rect x="20" y="20" width="0" height="16"/>
+      <circle cx="200" cy="28" r="6" fill="var(--down)"/>
+      <line x1="200" y1="12" x2="200" y2="44" stroke="var(--down)" stroke-width="2"/>
+      <text x="20" y="58" font-size="10" font-family="monospace" fill="var(--faint)">24,180</text>
+      <text x="110" y="58" font-size="10" font-family="monospace" fill="var(--muted)" text-anchor="middle">24,250</text>
+      <text x="290" y="58" font-size="10" font-family="monospace" fill="var(--muted)" text-anchor="middle">24,370</text>
+      <text x="380" y="58" font-size="10" font-family="monospace" fill="var(--faint)" text-anchor="end">24,440</text>
+      <text x="200" y="12" font-size="9" font-family="monospace" fill="var(--muted)" text-anchor="middle">68% ◂──▸</text>
+    </svg>
+    <div class="second">
+      <span>Bank Nifty</span>
+      <span class="num down">52,840 &nbsp;▼ −0.41%</span>
+    </div>
+    <div class="meta" style="margin-top:10px">
+      confidence 0.64 · model bridge-v0.9.1 · 30-day mean error 41 pts
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Why — contribution to the gap</div>
+    <div class="wf" id="wf-bridge"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">What matters today · 3</div>
+    <div style="border:1px solid var(--border);border-radius:6px;padding:11px;margin-bottom:8px">
+      <div class="meta"><span class="tier t1"></span>T1 · Reuters +22 · 4m ago</div>
+      <div style="font-family:var(--display);font-weight:600;font-size:14.5px;margin:4px 0 8px;line-height:1.3">
+        Fed cuts 25bp, signals slower path ahead</div>
+      <div class="num" style="font-size:13px">
+        <span class="muted">Bank Nifty 1d</span>
+        <span class="down" style="font-weight:500">−0.4%</span>
+        <span style="color:var(--faint)">[−1.3% ·· +0.5%]</span>
+      </div>
+      <div class="meta" style="margin-top:5px">34 analogs · 62% declined · conf 0.61</div>
+    </div>
+    <div style="border:1px solid var(--border);border-radius:6px;padding:11px;margin-bottom:8px">
+      <div class="meta"><span class="tier"></span>T0 · RBI · 1h ago</div>
+      <div style="font-family:var(--display);font-weight:600;font-size:14.5px;margin:4px 0 8px;line-height:1.3">
+        RBI eases risk weights on bank lending to NBFCs</div>
+      <div class="num" style="font-size:13px">
+        <span class="up" style="font-weight:500">+0.9%</span>
+        <span style="color:var(--faint)">[−0.2% ·· +2.0%]</span>
+      </div>
+      <div class="meta" style="margin-top:5px">11 analogs · conf 0.48 · thin evidence</div>
+    </div>
+    <div style="border:1px solid var(--border);border-radius:6px;padding:11px">
+      <div class="meta"><span class="tier t1"></span>T1 · Bloomberg +9 · 3h ago</div>
+      <div style="font-family:var(--display);font-weight:600;font-size:14.5px;margin:4px 0 8px;line-height:1.3">
+        Brent +2.1% after OPEC+ delays output decision</div>
+      <div class="num" style="font-size:13px">
+        <span class="down" style="font-weight:500">−0.3%</span>
+        <span style="color:var(--faint)">[−1.1% ·· +0.4%]</span>
+      </div>
+      <div class="meta" style="margin-top:5px">31 analogs · 58% declined · conf 0.55</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Key levels · from yesterday's open interest</div>
+    <div class="num" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;font-size:13px">
+      <span><span style="color:var(--muted);font-family:var(--body)">Max pain</span> 24,400</span>
+      <span><span style="color:var(--muted);font-family:var(--body)">PCR</span> 0.84</span>
+      <span><span style="color:var(--muted);font-family:var(--body)">High OI PE</span> 24,200</span>
+      <span><span style="color:var(--muted);font-family:var(--body)">High OI CE</span> 24,500</span>
+    </div>
+    <div class="meta" style="margin-top:9px">Data, not a recommendation.</div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Yesterday we said</div>
+    <div style="display:flex;justify-content:space-between;font-size:13.5px" class="num">
+      <span>Estimated 24,462</span><span>Actual 24,438</span>
+    </div>
+    <div style="margin-top:7px;font-size:13px">
+      <span class="num">Miss 24 pts</span>
+      <span class="up" style="font-weight:500">✓ inside the 68% range</span>
+    </div>
+    <div class="meta" style="margin-top:7px">30-day record: mean error 41 pts · 71% inside 68% range ›</div>
+  </div>
+
+  <div class="card" style="background:var(--sunken)">
+    <div style="font-size:11.5px;color:var(--faint)">
+      ⚠ Information and statistical analysis only. Not investment advice, not a
+      recommendation, not a forecast of returns.
+    </div>
+  </div>
+</div>
+
+<div class="rp">
+  <div class="lbl">What this screen is testing</div>
+  <ul>
+    <li><strong>RQ1</strong> — does a 07:30 briefing replace the 45–90 minute routine? Ask Q27–Q29 of the <code>interview-guide.md</code> with this open.</li>
+    <li>Does the reader understand the expected open <em>and</em> the range, without explanation?</li>
+    <li>Does <em>"Yesterday we said"</em> read as confidence or as weakness? It stays visible on a bad miss too.</li>
+    <li>Everything above the "What matters today" card must fit one phone screen with no scroll.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ───────────────────────── IMPACT CARD ───────────────────────── -->
+<section id="impact" hidden>
+  <div class="seg" role="group" aria-label="Variant">
+    <button aria-pressed="false" onclick="variant('A')">A · point only</button>
+    <button aria-pressed="false" onclick="variant('B')">B · + range</button>
+    <button aria-pressed="true" onclick="variant('C')">C · + analogs &amp; honesty</button>
+  </div>
+
+  <div class="ic">
+    <div class="hd">
+      <div class="meta"><span class="tier t1"></span>T1 · Reuters +22 others · 18:30 UTC · 00:00 IST</div>
+      <h3>Fed cuts 25bp, signals slower path ahead</h3>
+    </div>
+    <div class="bd">
+      <div id="ic-surprise">
+        <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;margin-bottom:12px">
+          <div><div class="lbl" style="margin-bottom:2px">Event</div>
+            <span class="num">RATE_DECISION · CUT</span><br>
+            <span class="meta">−25bp vs −25bp consensus</span></div>
+          <div><div class="lbl" style="margin-bottom:2px">Surprise</div>
+            <span class="num">z = +1.2</span><br>
+            <span class="meta">on the path, not the level</span></div>
+        </div>
+      </div>
+      <table class="tbl">
+        <thead><tr>
+          <th>Instrument</th><th>Expected</th>
+          <th class="colB">68% range</th><th class="colB">P(up)</th>
+          <th class="colC">n</th><th class="colB">conf</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Bank Nifty</td><td class="down">−0.41%</td>
+            <td class="colB">−1.3 · +0.5</td><td class="colB">39%</td>
+            <td class="colC">34</td><td class="colB">0.61</td></tr>
+          <tr><td>Nifty 50</td><td class="down">−0.28%</td>
+            <td class="colB">−0.9 · +0.4</td><td class="colB">42%</td>
+            <td class="colC">34</td><td class="colB">0.58</td></tr>
+          <tr><td>USD/INR</td><td class="up">+0.22%</td>
+            <td class="colB">−0.1 · +0.6</td><td class="colB">64%</td>
+            <td class="colC">41</td><td class="colB">0.66</td></tr>
+          <tr><td>Gold</td><td class="up">+0.70%</td>
+            <td class="colB">−0.2 · +1.6</td><td class="colB">68%</td>
+            <td class="colC">52</td><td class="colB">0.71</td></tr>
+          <tr class="thin colC"><td colspan="6">S&amp;P 500 — not enough history to call this (n=7)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="colC" id="analogs">
+        <hr>
+        <div class="lbl">The 34 analogs · 1-day move</div>
+        <svg class="fan" viewBox="0 0 400 60" role="img"
+             aria-label="Distribution of 34 analog outcomes, median −0.35 percent.">
+          <g fill="var(--border)">
+            <rect x="34" y="44" width="20" height="8"/><rect x="58" y="38" width="20" height="14"/>
+            <rect x="82" y="30" width="20" height="22"/><rect x="106" y="20" width="20" height="32"/>
+            <rect x="130" y="10" width="20" height="42"/>
+          </g>
+          <rect x="154" y="6" width="20" height="46" fill="var(--down)" opacity=".55"/>
+          <rect x="178" y="12" width="20" height="40" fill="var(--down)" opacity=".35"/>
+          <g fill="var(--border)">
+            <rect x="202" y="22" width="20" height="30"/><rect x="226" y="31" width="20" height="21"/>
+            <rect x="250" y="38" width="20" height="14"/><rect x="274" y="44" width="20" height="8"/>
+            <rect x="298" y="47" width="20" height="5"/>
+          </g>
+          <line x1="164" y1="2" x2="164" y2="52" stroke="var(--down)" stroke-width="2"/>
+          <text x="34" y="59" font-size="9" font-family="monospace" fill="var(--faint)">−3%</text>
+          <text x="164" y="59" font-size="9" font-family="monospace" fill="var(--down)" text-anchor="middle">median −0.35%</text>
+          <text x="318" y="59" font-size="9" font-family="monospace" fill="var(--faint)" text-anchor="end">+2%</text>
+        </svg>
+        <div class="alist">
+          <div><span>21 Sep 2026 · hawkish cut</span><span class="down">−0.8%</span></div>
+          <div><span>18 Dec 2024 · hawkish cut</span><span class="down">−1.4%</span></div>
+          <div><span>01 Nov 2023 · hawkish hold</span><span class="up">+0.2%</span></div>
+          <div><span>26 Jul 2023 · cut, dovish</span><span class="up">+0.6%</span></div>
+        </div>
+        <div class="meta" style="margin-top:7px">See all 34 ›</div>
+        <div class="warnline">
+          <span>⚠</span>
+          <span>9 of the 34 analogs fall in Sep–Dec 2024. Treat them as correlated,
+          not as 9 independent observations.</span>
+        </div>
+      </div>
+    </div>
+    <div class="disc">
+      ⚠ A statistical description of historical analogs. Not advice, not a
+      recommendation, not a forecast of returns.
+    </div>
+  </div>
+
+  <div class="rp">
+    <div class="lbl">What this screen is testing</div>
+    <ul>
+      <li><strong>RQ3</strong> — the decisive question. In variant C, point at
+        <em>"not enough history to call this"</em> and ask what they make of it.
+        Does admitting ignorance read as credibility or as incompetence?</li>
+      <li>Pre-registered: <strong>C ≥ B &gt; A</strong> on trust. If A beats C, our
+        transparency principle is wrong for this audience and the card gets redesigned.</li>
+      <li>Comprehension is measured before opinion — ask "what is this telling you?" first.</li>
+      <li>Note which variant they would forward to a friend. Sharing is the growth loop.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ───────────────────────── WATERFALL ───────────────────────── -->
+<section id="wf" hidden>
+  <div class="seg" role="group" aria-label="Component count">
+    <button aria-pressed="true" onclick="density(7)">7 components</button>
+    <button aria-pressed="false" onclick="density(11)">11 components</button>
+  </div>
+  <div class="card">
+    <div class="lbl">Why Nifty is indicated down 152 points</div>
+    <div class="wf" id="wf-test"></div>
+  </div>
+  <div class="rp">
+    <div class="lbl">What this screen is testing</div>
+    <ul>
+      <li><strong>RQ4</strong> — how many components can a median retail trader read?
+        Our hypothesis is <strong>≤6–7</strong>; 11 is the stress case.</li>
+      <li>Ask "what is this chart telling you?" <em>before</em> "is this too much detail?"</li>
+      <li>Pre-registered: ≥70% comprehension at 7 bars, degrading at 11.
+        The result sets a hard cap in <code>design-system.md</code>.</li>
+      <li>Watch whether anyone tries to tap a bar. If they do, drill-down is expected, not optional.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  Phase 0 concept-test stimulus · Newze · built 12 Nov 2026 ·
+  protocol in <code>02-research/kit/concept-test.md</code> ·
+  all figures illustrative
+</footer>
+</div>
+
+<script>
+const BRIDGE = [
+  ["US close",-38,"S&P 500 −0.9%"],["Fed decision",-18,"25bp cut, hawkish guidance"],
+  ["Crude",-12,"Brent +2.1%"],["USD/INR",9,"rupee firmer"],
+  ["ADR drag",-6,"Infosys, HDFC Bank lower"],["Asia",-4,"Nikkei, Hang Seng mixed"],
+  ["Residual",2,""]
+];
+const EXTRA = [
+  ["US 10-year",-5,"yield +4bp"],["India VIX",-3,"+0.6 points"],
+  ["FII flow",-4,"net sellers ₹2,140cr"],["Gold",1,"+0.7%"]
+];
+
+function drawWF(el, rows){
+  const max = Math.max(...rows.map(r=>Math.abs(r[1])));
+  const net = rows.reduce((s,r)=>s+r[1],0);
+  el.innerHTML = rows.map(([name,v,note])=>{
+    const w = (Math.abs(v)/max)*50;
+    const cls = v>0?'up':(v<0?'down':'flat');
+    const style = v>=0
+      ? `left:50%;width:${w}%;background:var(--up)`
+      : `right:50%;width:${w}%;background:var(--down)`;
+    return `<div class="wfrow"><span class="wfname" title="${note||name}">${name}</span>`
+      + `<span class="wfbar"><i style="${style}"></i></span>`
+      + `<span class="wfval ${cls}">${v>0?'+':''}${v}</span></div>`;
+  }).join('')
+  + `<div class="wfrow wfnet"><span class="wfname" style="color:var(--fg)">Net</span>`
+  + `<span></span><span class="wfval ${net<0?'down':'up'}">${net>0?'+':''}${net} pts</span></div>`;
+}
+
+function show(id){
+  ['bridge','impact','wf'].forEach(s=>{
+    document.getElementById(s).hidden = s!==id;
+    const t = document.getElementById('t-'+(s==='wf'?'wf':s));
+    if(t) t.setAttribute('aria-selected', String(s===id));
+  });
+  window.scrollTo(0,0);
+}
+function variant(v){
+  document.querySelectorAll('#impact .seg button').forEach(b=>
+    b.setAttribute('aria-pressed', String(b.textContent.trim().startsWith(v))));
+  const showB = v!=='A', showC = v==='C';
+  document.querySelectorAll('#impact .colB').forEach(e=>e.hidden=!showB);
+  document.querySelectorAll('#impact .colC').forEach(e=>e.hidden=!showC);
+  document.getElementById('ic-surprise').hidden = !showB;
+}
+function density(n){
+  document.querySelectorAll('#wf .seg button').forEach(b=>
+    b.setAttribute('aria-pressed', String(b.textContent.startsWith(String(n)))));
+  const rows = n===7 ? BRIDGE : BRIDGE.slice(0,6).concat(EXTRA).concat([["Residual",2,""]]);
+  drawWF(document.getElementById('wf-test'), rows);
+}
+drawWF(document.getElementById('wf-bridge'), BRIDGE);
+density(7);
+variant('C');
+</script>

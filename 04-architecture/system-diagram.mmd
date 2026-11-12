@@ -1,0 +1,92 @@
+%% Newze system diagram — render with:
+%%   npx -y @mermaid-js/mermaid-cli -i system-diagram.mmd -o system-diagram.png -w 2400
+%% Narrative version with latency budgets: system-diagram.md
+flowchart TB
+    subgraph EXT["EXTERNAL SOURCES"]
+        W["News wires<br/>Reuters · PTI · AFP"]
+        R["Publisher RSS<br/>headline + link only"]
+        X["Exchanges<br/>NSE · BSE · GIFT · NYSE"]
+        F["Filings<br/>SEBI · EDGAR · RNS · RBI"]
+        M["Macro + calendars<br/>MoSPI · FRED · consensus"]
+        P["Prices · FX · commodities<br/>ADRs · vendors"]
+    end
+
+    subgraph ING["① INGEST  (Python workers)"]
+        SR[("Source registry<br/>tier · licence · cadence<br/>latency class")]
+        IW["Pollers · wire clients<br/>file fetchers · WS listeners"]
+        RAW[("R2 object store<br/>RAW · IMMUTABLE<br/>7-year retention")]
+    end
+
+    BUS{{"EVENT BUS — Redpanda<br/>signal.received · story.updated · event.classified<br/>impact.published · outcome.settled · dlq.*<br/>replay = reprocessing"}}
+
+    subgraph ENR["ENRICH"]
+        N["② Normalise<br/>tri-coded time · units · currency · tier"]
+        E["③ Resolve entities<br/>dict → fuzzy → LLM<br/>target ≥97% precision"]
+        C["④ Cluster into stories<br/>embeddings + ANN<br/>target ≥92% purity"]
+        K["⑤ Classify<br/>taxonomy v1 · surprise vs consensus<br/>Haiku 5.5 → Opus 5"]
+    end
+
+    subgraph SCO["⑥ SCORE — Impact Engine"]
+        A["Analog retrieval<br/>PRIMARY · explainable"]
+        S["Statistical<br/>event study + GARCH"]
+        L["Learned model<br/>GBDT · Phase 5+"]
+        G{"PUBLICATION GATE<br/>n ≥ 12 AND calibration OK"}
+    end
+
+    subgraph PUB["⑦ PUBLISH"]
+        RQ["Review queue<br/>high impact · low conf · T4"]
+        FO["Fan-out<br/>SSE · ISR · alerts · search · API"]
+    end
+
+    SET["⑧ SETTLE  (Temporal)<br/>15m · 1h · 1d · 5d · 20d<br/>APPEND-ONLY"]
+
+    subgraph DATA["DATA STORES"]
+        PG[("Postgres 17 + pgvector<br/>stories · events · impacts<br/>outcomes · ledger · users")]
+        TS[("TimescaleDB<br/>OHLCV · OI · IV · flows")]
+        RD[("Redis<br/>cache · aliases · dedupe")]
+        TY[("Typesense<br/>search")]
+    end
+
+    subgraph SRV["SERVING"]
+        BFF["Next.js 15 + tRPC BFF"]
+        API["Public REST / SSE API"]
+        CDN["Cloudflare CDN + WAF<br/>cache keyed by entitlement"]
+    end
+
+    CORPUS[("EVENT CORPUS — MOAT 1<br/>event × context × realised outcome<br/>grows daily · never reset")]
+    LEDGER[("ACCURACY LEDGER — MOAT 2<br/>public · permanent · no delete path")]
+
+    U(["Users — web / PWA"])
+    B(["B2B integrators"])
+
+    W & R & X & F & M & P --> IW
+    SR -.config.-> IW
+    IW --> RAW
+    IW --> BUS
+    BUS --> N --> E --> C --> K --> BUS
+    BUS --> A & S & L
+    A & S & L --> G
+    G -->|pass| RQ
+    G -->|fail| NEH["‘Not enough history<br/>to call this’"]
+    RQ --> FO
+    FO --> PG
+    FO --> CDN
+    SET --> LEDGER
+    PG --> SET
+    TS --> SET
+    TS --> A
+    CORPUS --> A
+    SET --> CORPUS
+    PG & TS & RD & TY --> BFF
+    PG --> API
+    BFF --> CDN --> U
+    API --> B
+    LEDGER --> BFF
+    RAW -.replay.-> BUS
+
+    classDef moat fill:#1f3a2e,stroke:#2FBF71,stroke-width:3px,color:#E6EAF2
+    classDef gate fill:#4a3410,stroke:#F0A830,stroke-width:2px,color:#E6EAF2
+    classDef store fill:#141821,stroke:#4D8DFF,color:#E6EAF2
+    class CORPUS,LEDGER moat
+    class G,RQ gate
+    class PG,TS,RD,TY,RAW,SR store

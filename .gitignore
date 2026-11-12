@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# next.js
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# agent tooling cache (contains local session ids)
+graft/
+AGENTS.md
+
+# env
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel/
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# python spike artifacts
+__pycache__/
+*.py[cod]
